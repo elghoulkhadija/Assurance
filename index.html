@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Assurance Automobile - Maroc</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #858796;
+            --success-color: #1cc88a;
+            --info-color: #36b9cc;
+            --warning-color: #f6c23e;
+            --danger-color: #e74a3b;
+            --dark-color: #1a1a2e;
+            --light-bg: #f4f6f9;
+            --card-shadow: 0 4px 20px rgba(0, 0, 0, .1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f4f6f9, #e8ecf1);
+            font-family: 'Segoe UI';
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), #1a3d6f);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, .15);
+        }
+
+        .logo-container {
+            background: #fff;
+            padding: .3rem .8rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, .2);
+        }
+
+        .logo-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary-color), #ba4338);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .upload-section {
+            background: #fff;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--card-shadow);
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .main-container {
+            padding: 1rem 0;
+        }
+
+        .dashboard-content {
+            display: none;
+        }
+
+        .table-section,
+        .filters-section {
+            background: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .kpi-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border-left: 5px solid;
+        }
+
+        .kpi-label {
+            font-size: .9rem;
+            color: var(--secondary-color);
+            text-transform: uppercase;
+        }
+
+        .search-box {
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark p-3">
+    <div class="container-fluid d-flex align-items-center justify-content-between">
+        <!-- Logo et titre -->
+        <div class="d-flex align-items-center">
+            <div class="logo-container d-flex align-items-center">
+                <img src="as.png" alt="Logo" style="height:40px; margin-right:10px;">
+                <i class="fas fa-car me-2"></i>
+                <span class="logo-text">ASSUR AUTO</span>
+            </div>
+            <h2 class="ms-4 mb-0 text-white" style="font-size:2.5rem;">Dashboard Professionnel</h2>
+        </div>
+
+        <!-- Localisation -->
+        <div class="text-white d-flex align-items-center">
+            <i class="fas fa-map-marker-alt me-2"></i>Maroc
+        </div>
+    </div>
+</nav>
+
+
+    <div class="container main-container">
+
+        <!-- import -->
+        <div class="upload-section">
+            <h4>Importer votre fichier Excel</h4>
+            <input type="file" id="excelFile" accept=".xlsx" hidden>
+            <label for="excelFile" class="btn btn-primary mt-3"><i class="fas fa-file-excel me-2"></i>Choisir
+                fichier</label>
+            <div id="fileNameDisplay" class="mt-2 text-success fw-bold"></div>
+            <div class="spinner-border spinner-border-sm text-primary mt-3" style="display:none"></div>
+        </div>
+
+        <div class="dashboard-content">
+
+            <!-- KPI -->
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <div class="kpi-card border-primary">
+                        <div class="kpi-label">Total Contrats</div>
+                        <div class="h3" id="totalContracts">0</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card border-success">
+                        <div class="kpi-label">Prime Totale</div>
+                        <div class="h3" id="totalPrime">0 DH</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card border-info">
+                        <div class="kpi-label">Prime Moyenne</div>
+                        <div class="h3" id="avgPrime">0 DH</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="kpi-card border-warning">
+                        <div class="kpi-label">Valeur Véhicules</div>
+                        <div class="h3" id="totalVehicleValue">0 DH</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILTRES -->
+            <div class="filters-section mb-3">
+                <h6><i class="fas fa-filter me-2"></i>Filtres</h6>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Ville</label>
+                        <select id="filterCity" class="form-select">
+                            <option value="">Toutes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Type d’assurance</label>
+                        <select id="filterInsuranceType" class="form-select">
+                            <option value="">Tous</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label>Type de véhicule</label>
+                        <select id="filterVehicleType" class="form-select">
+                            <option value="">Tous</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EXPORT -->
+            <div class="mb-3 d-flex gap-2 flex-wrap">
+                <button class="btn btn-danger" onclick="exportToPDF()"><i class="fas fa-file-pdf me-2"></i>PDF</button>
+                <button class="btn btn-primary" onclick="exportToWord()"><i
+                        class="fas fa-file-word me-2"></i>Word</button>
+                <button class="btn btn-success" onclick="exportToExcel()"><i
+                        class="fas fa-file-excel me-2"></i>Excel</button>
+            </div>
+
+            <!-- TABLE -->
+            <div class="table-section">
+                <h4><i class="fas fa-list me-2"></i>Liste des contrats</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered" id="contractsTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Ville</th>
+                                <th>Type Assurance</th>
+                                <th>Type Véhicule</th>
+                                <th>Prime Totale</th>
+                                <th>Valeur Véhicule</th>
+                                <th>Date Souscription</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <script>
+        let allData = [], filteredData = [];
+
+        // IMPORT
+        document.getElementById("excelFile").addEventListener("change", e => {
+            const file = e.target.files[0]; if (!file) return;
+            document.querySelector(".spinner-border").style.display = "inline-block";
+            document.getElementById("fileNameDisplay").textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = evt => {
+                const workbook = XLSX.read(new Uint8Array(evt.target.result), { type: "array" });
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const rows = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+
+                allData = rows.map(r => {
+                    let primeBase = parseFloat(r.Prime_Base) || 0;
+                    let risque = parseFloat(r.Montant_Risque) || 0;
+                    let primeTotale = parseFloat(r.Prime_Totale) || (primeBase + risque);
+                    return {
+                        ID_Client: r.ID_Client || "",
+                        Nom: r.Nom || "",
+                        Prénom: r.Prénom || "",
+                        Ville: r.Ville || "",
+                        Type_Assurance: r.Type_Assurance || "",
+                        Type_Vehicule: r.Type_Vehicule || "",
+                        Prime_Totale: primeTotale,
+                        Valeur_Vehicule: parseFloat(r.Valeur_Vehicule) || 0,
+                        Date_Souscription: r.Date_Souscription || ""
+                    };
+                });
+
+                filteredData = [...allData];
+                populateFilters();
+                updateDashboard();
+                document.querySelector(".spinner-border").style.display = "none";
+                document.querySelector(".dashboard-content").style.display = "block";
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // FILTRES
+        function populateFilters() {
+            fill("filterCity", [...new Set(allData.map(x => x.Ville))]);
+            fill("filterInsuranceType", [...new Set(allData.map(x => x.Type_Assurance))]);
+            fill("filterVehicleType", [...new Set(allData.map(x => x.Type_Vehicule))]);
+        }
+        function fill(id, list) {
+            const s = document.getElementById(id);
+            s.innerHTML = '<option value="">Tous</option>';
+            list.filter(Boolean).sort().forEach(v => s.innerHTML += `<option>${v}</option>`);
+        }
+        document.querySelectorAll("#filterCity,#filterInsuranceType,#filterVehicleType")
+            .forEach(el => el.addEventListener("change", applyFilters));
+
+        function applyFilters() {
+            const city = filterCity.value, typeA = filterInsuranceType.value, typeV = filterVehicleType.value;
+            filteredData = allData.filter(r =>
+                (!city || r.Ville === city) &&
+                (!typeA || r.Type_Assurance === typeA) &&
+                (!typeV || r.Type_Vehicule === typeV)
+            );
+            updateDashboard();
+        }
+
+        // DASHBOARD & TABLE
+        function updateDashboard() {
+            document.getElementById("totalContracts").textContent = filteredData.length;
+            const totalPrime = filteredData.reduce((a, b) => a + (b.Prime_Totale || 0), 0);
+            const avg = filteredData.length ? (totalPrime / filteredData.length) : 0;
+            const totalVeh = filteredData.reduce((a, b) => a + (b.Valeur_Vehicule || 0), 0);
+
+            document.getElementById("totalPrime").textContent = totalPrime.toLocaleString() + " DH";
+            document.getElementById("avgPrime").textContent = avg.toFixed(2) + " DH";
+            document.getElementById("totalVehicleValue").textContent = totalVeh.toLocaleString() + " DH";
+
+            const tbody = document.getElementById("tableBody");
+            tbody.innerHTML = "";
+            filteredData.forEach(r => {
+                tbody.innerHTML += `
+   <tr>
+    <td>${r.ID_Client}</td>
+    <td>${r.Nom} ${r.Prénom}</td>
+    <td>${r.Ville}</td>
+    <td>${r.Type_Assurance}</td>
+    <td>${r.Type_Vehicule}</td>
+    <td>${r.Prime_Totale.toLocaleString()}</td>
+    <td>${r.Valeur_Vehicule.toLocaleString()}</td>
+    <td>${r.Date_Souscription}</td>
+   </tr>`;
+            });
+        }
+
+        // EXPORTS
+        function exportToExcel() {
+            const ws = XLSX.utils.json_to_sheet(filteredData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Contrats");
+            XLSX.writeFile(wb, "Contrats.xlsx");
+        }
+        function exportToWord() {
+            let html = "<table border=1><tr><th>ID</th><th>Nom</th><th>Ville</th><th>Assurance</th><th>Véhicule</th><th>Prime</th></tr>";
+            filteredData.forEach(r => html += `<tr><td>${r.ID_Client}</td><td>${r.Nom}</td><td>${r.Ville}</td><td>${r.Type_Assurance}</td><td>${r.Type_Vehicule}</td><td>${r.Prime_Totale}</td></tr>`);
+            html += "</table>";
+            saveAs(new Blob(["\ufeff", html], { type: "application/msword" }), "Contrats.doc");
+        }
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.autoTable({ html: "#contractsTable", startY: 10, theme: "grid", styles: { fontSize: 8 } });
+            doc.save("Contrats.pdf");
+        }
+    </script>
+</body>
+
+</html>
